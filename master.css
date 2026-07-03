@@ -1,0 +1,72 @@
+body {
+    font-family: "Google sans";
+    margin: 0;
+}
+
+:root {
+    --primary: #247BA0; /* Title, links, main butttons */
+    --secondary: #70C1B3; /* Less important elements */
+    --accent: #F25F5C; /* Alrams, Buy Button, Sold */
+    --highlight: #FFE066;
+    
+    --background: #50514F;
+    --text: #FFFFFF;
+}
+
+.header {
+    background-color: var(--background);
+    border-bottom: 10px solid var(--accent);
+    width: 100%;
+    position: sticky;
+    top: 0;
+}
+
+.main-title {
+    color: var(--accent);
+    text-align: center;
+    font-size : 40px;
+    margin: 0;
+}
+
+.main-title-2 {
+    color: var(--secondary);
+}
+
+.nav-bar {
+    background-color: var(--background);
+    overflow: hidden;
+}
+
+.nav-link {
+    color: var(--text);
+    background-color: var(--primary);
+    outline: 1px solid var(--secondary);
+    text-align: center;
+    cursor: pointer;
+
+    float: left;
+    margin-left: 1%;
+    margin-bottom: 10px;
+    margin-top: 3px;
+    width: calc(96% / 3);
+}
+
+.nav-link:hover {
+    color: var(--accent);
+    background-color: var(--highlight);
+}
+.clear {
+    clear: both;
+}
+
+/* ========== Still Working  here ========== */
+
+.main-section {
+    background-color: var(--background);
+    padding: 30px;
+}
+
+.catagory-section {
+    text-align: center;
+}
+
