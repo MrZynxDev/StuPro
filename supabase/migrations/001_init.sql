@@ -39,6 +39,9 @@ create table if not exists public.push_subscriptions (
   created_at timestamptz not null default now()
 );
 
+-- Accès via l'API (les nouveaux projets Supabase n'accordent plus ces droits par défaut)
+grant select, insert, update, delete on public.subjects, public.items, public.push_subscriptions to authenticated, service_role;
+
 -- Sécurité : chacun ne voit que ses propres données
 alter table public.subjects enable row level security;
 alter table public.items enable row level security;

@@ -16,51 +16,30 @@ npm install
 npm run dev
 ```
 
-## 1. Projet Supabase
+## 1. Supabase — déjà configuré ✅
 
-Projet : `fusysqjailouuippexln`. L'URL et la clé publique sont déjà dans `.env.production` / `.env.development`.
+Projet `fusysqjailouuippexln` (URL, clé publique et clé VAPID publique dans `.env.production`).
 
-1. **SQL Editor** → colle et exécute `supabase/migrations/001_init.sql` (ré-exécutable sans risque).
-2. **Authentication → URL Configuration** : mets l'URL du site (ex. `https://stupro.vercel.app`) dans *Site URL*, et ajoute `http://localhost:5173` dans *Redirect URLs*.
-3. (Conseillé, pour l'app installée sur iPhone) **Authentication → Email Templates → Magic Link** : ajoute `{{ .Token }}` dans le texte pour recevoir aussi un code à 6 chiffres.
+- Tables `items`, `subjects`, `push_subscriptions` + RLS + temps réel (`supabase/migrations/001_init.sql`, ré-exécutable).
+- Edge Function `send-reminders` déployée, secrets VAPID / `CRON_SECRET` enregistrés côté Supabase.
+- `pg_cron` appelle la fonction chaque minute (job `stupro-reminders`).
+- Auth : connexion par lien magique. *Site URL* = `http://localhost:5173` et `https://*.vercel.app` autorisé.
 
-## 2. Notifications push
+**Après le déploiement Vercel** : Authentication → URL Configuration → mets l'URL Vercel dans *Site URL*.
 
-```bash
-npx web-push generate-vapid-keys
-```
+> Le modèle d'e-mail (texte français, code à 6 chiffres) n'est modifiable qu'avec un SMTP personnalisé ou un plan payant.
 
-- Mets la **clé publique** dans `.env.local` → `VITE_VAPID_PUBLIC_KEY`.
-- Déploie la fonction et ses secrets (avec la [CLI Supabase](https://supabase.com/docs/guides/cli)) :
+## 2. Notifications
 
-```bash
-supabase login
-supabase link --project-ref <ref-du-projet>
-supabase secrets set VAPID_PUBLIC_KEY=... VAPID_PRIVATE_KEY=... VAPID_SUBJECT=mailto:toi@exemple.com CRON_SECRET=<un-mot-de-passe-long>
-supabase functions deploy send-reminders --no-verify-jwt
-```
-
-- **Database → Extensions** : active `pg_cron` et `pg_net`, puis dans le SQL Editor :
-
-```sql
-select cron.schedule(
-  'stupro-reminders', '* * * * *',
-  $$ select net.http_post(
-       url := 'https://<ref-du-projet>.supabase.co/functions/v1/send-reminders',
-       headers := '{"x-cron-secret": "<le-meme-CRON_SECRET>"}'::jsonb
-     ) $$
-);
-```
-
-- Dans l'app : **Réglages → Activer les notifications**, sur chaque appareil.
-  - **iPhone** : ouvre le site dans Safari → Partager → *Sur l'écran d'accueil*, puis active les notifications depuis l'app installée (iOS 16.4+).
-  - **Laptop** : Chrome/Edge proposent « Installer l'application » dans la barre d'adresse.
+Dans l'app : **Réglages → Activer les notifications**, sur chaque appareil.
+- **iPhone** : Safari → Partager → *Sur l'écran d'accueil*, puis active les notifications depuis l'app installée (iOS 16.4+).
+- **Laptop** : Chrome/Edge proposent « Installer l'application » dans la barre d'adresse.
 
 ## 3. Déployer sur Vercel
 
 1. Importe le repo sur [vercel.com](https://vercel.com) (preset **Vite** détecté automatiquement).
 2. Aucune variable à ajouter : `.env.production` est déjà dans le repo.
-3. Deploy, puis mets l'URL Vercel dans Supabase (étape 1.2).
+3. Deploy, puis mets l’URL Vercel comme *Site URL* dans Supabase (voir étape 1).
 
 ## Structure
 

@@ -102,10 +102,6 @@ export async function sendLoginEmail(email) {
   if (error) throw error;
 }
 
-export async function verifyCode(email, token) {
-  const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
-  if (error) throw error;
-}
 
 export async function signOut() {
   if (hasSupabase) await supabase.auth.signOut();
