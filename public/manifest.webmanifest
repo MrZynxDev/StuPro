@@ -1,0 +1,16 @@
+{
+  "name": "StuPro — Mon agenda d'études",
+  "short_name": "StuPro",
+  "description": "Examens, devoirs et révisions en un coup d'œil.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#121418",
+  "theme_color": "#121418",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
