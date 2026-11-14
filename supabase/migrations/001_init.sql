@@ -44,10 +44,13 @@ alter table public.subjects enable row level security;
 alter table public.items enable row level security;
 alter table public.push_subscriptions enable row level security;
 
+drop policy if exists "own subjects" on public.subjects;
 create policy "own subjects" on public.subjects for all
   using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists "own items" on public.items;
 create policy "own items" on public.items for all
   using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists "own push subscriptions" on public.push_subscriptions;
 create policy "own push subscriptions" on public.push_subscriptions for all
   using (user_id = auth.uid()) with check (user_id = auth.uid());
 
@@ -65,4 +68,12 @@ create trigger items_reset_notified before update on public.items
   for each row execute function public.reset_notified();
 
 -- Synchronisation en temps réel entre appareils
-alter publication supabase_realtime add table public.items, public.subjects;
+do $$
+begin
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and tablename = 'items') then
+    alter publication supabase_realtime add table public.items;
+  end if;
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and tablename = 'subjects') then
+    alter publication supabase_realtime add table public.subjects;
+  end if;
+end $$;

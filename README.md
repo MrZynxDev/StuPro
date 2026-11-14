@@ -16,14 +16,13 @@ npm install
 npm run dev
 ```
 
-## 1. Créer le projet Supabase
+## 1. Projet Supabase
 
-1. Crée un projet sur [supabase.com](https://supabase.com).
-2. **SQL Editor** → colle et exécute `supabase/migrations/001_init.sql`.
-3. **Project Settings → API** : copie `Project URL` et la clé `anon public`.
-4. Copie `.env.example` en `.env.local` et remplis `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`.
-5. **Authentication → URL Configuration** : mets l'URL du site (ex. `https://stupro.vercel.app`) dans *Site URL*, et ajoute `http://localhost:5173` dans *Redirect URLs*.
-6. (Conseillé, pour l'app installée sur iPhone) **Authentication → Email Templates → Magic Link** : ajoute `{{ .Token }}` dans le texte pour recevoir aussi un code à 6 chiffres.
+Projet : `fusysqjailouuippexln`. L'URL et la clé publique sont déjà dans `.env.production` / `.env.development`.
+
+1. **SQL Editor** → colle et exécute `supabase/migrations/001_init.sql` (ré-exécutable sans risque).
+2. **Authentication → URL Configuration** : mets l'URL du site (ex. `https://stupro.vercel.app`) dans *Site URL*, et ajoute `http://localhost:5173` dans *Redirect URLs*.
+3. (Conseillé, pour l'app installée sur iPhone) **Authentication → Email Templates → Magic Link** : ajoute `{{ .Token }}` dans le texte pour recevoir aussi un code à 6 chiffres.
 
 ## 2. Notifications push
 
@@ -60,8 +59,8 @@ select cron.schedule(
 ## 3. Déployer sur Vercel
 
 1. Importe le repo sur [vercel.com](https://vercel.com) (preset **Vite** détecté automatiquement).
-2. Ajoute les variables `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_VAPID_PUBLIC_KEY`.
-3. Deploy, puis mets l'URL Vercel dans Supabase (étape 1.5).
+2. Aucune variable à ajouter : `.env.production` est déjà dans le repo.
+3. Deploy, puis mets l'URL Vercel dans Supabase (étape 1.2).
 
 ## Structure
 
