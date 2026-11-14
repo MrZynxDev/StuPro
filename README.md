@@ -23,7 +23,7 @@ Projet `fusysqjailouuippexln` (URL, clé publique et clé VAPID publique dans `.
 - Tables `items`, `subjects`, `push_subscriptions` + RLS + temps réel (`supabase/migrations/001_init.sql`, ré-exécutable).
 - Edge Function `send-reminders` déployée, secrets VAPID / `CRON_SECRET` enregistrés côté Supabase.
 - `pg_cron` appelle la fonction chaque minute (job `stupro-reminders`).
-- Auth : connexion par lien magique. *Site URL* = `http://localhost:5173` et `https://*.vercel.app` autorisé.
+- Auth : e-mail + mot de passe, sans e-mail de confirmation (`mailer_autoconfirm`). *Site URL* = `http://localhost:5173` et `https://*.vercel.app` autorisé.
 
 **Après le déploiement Vercel** : Authentication → URL Configuration → mets l'URL Vercel dans *Site URL*.
 

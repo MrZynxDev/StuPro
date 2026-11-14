@@ -94,14 +94,17 @@ async function setUser(user) {
   emit();
 }
 
-export async function sendLoginEmail(email) {
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: location.origin },
-  });
+/** Connexion e-mail + mot de passe (sans e-mail de confirmation : mailer_autoconfirm activé). */
+export async function signIn(email, password) {
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
 }
 
+export async function signUp(email, password) {
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  if (error) throw error;
+  if (!data.session) throw new Error('Compte créé, mais la confirmation par e-mail est encore active côté Supabase.');
+}
 
 export async function signOut() {
   if (hasSupabase) await supabase.auth.signOut();
