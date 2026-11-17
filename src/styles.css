@@ -332,6 +332,109 @@ input[type='time'] {
   outline: 2px solid var(--accent);
 }
 
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Découpage ---------- */
+.split {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+}
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+}
+.toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.toggle-ui {
+  flex: none;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  position: relative;
+  transition: background 0.15s;
+}
+.toggle-ui::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.15s, background 0.15s;
+}
+.toggle input:checked + .toggle-ui {
+  background: var(--accent);
+}
+.toggle input:checked + .toggle-ui::after {
+  transform: translateX(18px);
+  background: var(--accent-ink);
+}
+.toggle input:focus-visible + .toggle-ui {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.split-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.split .hint {
+  margin: 0;
+}
+.split .hint.warn {
+  color: var(--exam);
+}
+.split-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.split-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.split-list li span {
+  flex: none;
+  width: 96px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+}
+.split-list input {
+  min-height: 40px !important;
+  padding: 8px 12px !important;
+}
+.split-info {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 14px;
+}
+
 /* ---------- Calendar ---------- */
 .calendar-layout {
   display: grid;
@@ -572,8 +675,9 @@ input[type='time'] {
 }
 .card-tags {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 136px;
   gap: 5px;
   cursor: pointer;
   flex: none;
@@ -603,6 +707,18 @@ input[type='time'] {
 .tag-haute {
   background: color-mix(in srgb, var(--danger) 22%, transparent);
   color: var(--danger);
+}
+.tag-part {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.tag-progress {
+  background: var(--surface-3);
+  color: var(--muted);
+}
+.tag-progress.complete {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
 }
 .countdown {
   background: var(--accent);

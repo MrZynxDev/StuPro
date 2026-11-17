@@ -84,6 +84,18 @@ export function computeTimes(date, time, remindMinutes) {
   return { due_at: due.toISOString(), remind_at: remind ? remind.toISOString() : null };
 }
 
+/**
+ * Répartit `n` dates uniformément entre `startKey` et la veille de `dueKey`.
+ * Renvoie { dates, available } — `dates` peut contenir moins de `n` jours s'il n'y a pas assez de place.
+ */
+export function splitDates(startKey, dueKey, n) {
+  const available = Math.max(0, daysBetween(startKey, dueKey)); // jours de start à la veille de due, inclus
+  const count = Math.min(n, available);
+  const dates = [];
+  for (let i = 0; i < count; i++) dates.push(addDays(startKey, Math.floor((i * available) / count)));
+  return { dates, available };
+}
+
 export function pluralItems(n) {
   return n === 0 ? 'Rien' : n === 1 ? '1 élément' : `${n} éléments`;
 }

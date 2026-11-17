@@ -171,6 +171,57 @@ export async function saveItem(input, id) {
   return load();
 }
 
+/** Titre et type d'une partie : devoir → « X — partie i/n », examen → séance de révision. */
+function partOf(parent, i, n) {
+  return parent.type === 'examen'
+    ? { type: 'etude', title: `Révision : ${parent.title.trim()} (${i}/${n})` }
+    : { type: 'devoir', title: `${parent.title.trim()} — partie ${i}/${n}` };
+}
+
+/** Crée l'élément principal + une partie par date de `partDates`. */
+export async function saveItemWithParts(input, partDates) {
+  const parent = normalize(input);
+  if (parent.subject) await ensureSubject(parent.subject);
+  const n = partDates.length;
+  const parts = partDates.map((date, i) =>
+    normalize({
+      ...input,
+      ...partOf(input, i + 1, n),
+      date,
+      time: '',
+      notes: '',
+      remind_minutes_before: input.remind_minutes_before === '' || input.remind_minutes_before == null ? null : 0, // 8h le jour même
+    }),
+  );
+
+  if (!hasSupabase) {
+    const items = lsRead(LS_ITEMS);
+    const parentId = uid();
+    const base = { done: false, created_at: new Date().toISOString() };
+    items.push({ id: parentId, ...base, ...parent, parts: n });
+    parts.forEach((p, i) => items.push({ id: uid(), ...base, ...p, parent_id: parentId, part: i + 1, parts: n }));
+    lsWrite(LS_ITEMS, items);
+    return load();
+  }
+
+  const { data, error } = await supabase
+    .from('items')
+    .insert({ ...parent, parts: n, user_id: state.user.id })
+    .select('id')
+    .single();
+  if (error) throw error;
+  const res = await supabase
+    .from('items')
+    .insert(parts.map((p, i) => ({ ...p, parent_id: data.id, part: i + 1, parts: n, user_id: state.user.id })));
+  if (res.error) throw res.error;
+  return load();
+}
+
+/** Parties d'un élément principal. */
+export function partsOf(id) {
+  return state.items.filter((x) => x.parent_id === id).sort((a, b) => a.part - b.part);
+}
+
 export async function toggleDone(id) {
   const item = state.items.find((x) => x.id === id);
   if (!item) return;
@@ -186,7 +237,7 @@ export async function toggleDone(id) {
 
 export async function deleteItem(id) {
   if (!hasSupabase) {
-    lsWrite(LS_ITEMS, lsRead(LS_ITEMS).filter((x) => x.id !== id));
+    lsWrite(LS_ITEMS, lsRead(LS_ITEMS).filter((x) => x.id !== id && x.parent_id !== id)); // + ses parties
     return load();
   }
   const { error } = await supabase.from('items').delete().eq('id', id);
