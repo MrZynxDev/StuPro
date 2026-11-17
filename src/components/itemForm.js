@@ -1,4 +1,4 @@
-import { esc, TYPES, PRIORITIES, REMINDERS, todayKey, splitDates, formatLongDate } from '../utils.js';
+import { esc, TYPES, PRIORITIES, REMINDERS, todayKey, splitDates, defaultSplitStart, formatLongDate, fromKey } from '../utils.js';
 import { state, saveItem, saveItemWithParts, deleteItem, partsOf } from '../store.js';
 import { icons } from '../icons.js';
 import { toast } from './toast.js';
@@ -71,6 +71,9 @@ function bindSplit(form) {
   const msg = box.querySelector('[data-split-msg]');
 
   const type = () => form.querySelector('[name=type]:checked').value;
+  let startTouched = false;
+  form.split_start.addEventListener('change', () => (startTouched = Boolean(form.split_start.value)));
+  const formatShort = (k) => fromKey(k).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
 
   function recompute() {
     const t = type();
@@ -82,11 +85,13 @@ function bindSplit(form) {
 
     const n = Math.min(14, Math.max(2, Number(form.parts.value) || 2));
     const due = form.date.value;
+    // Tant que l'utilisateur n'a pas choisi le début, on prend les n jours juste avant l'échéance
+    if (!startTouched && due) form.split_start.value = defaultSplitStart(due, n);
     const start = form.split_start.value || todayKey();
     const { dates, available } = splitDates(start, due, n);
     if (!due || available === 0) msg.textContent = 'La date limite doit être après le jour de début.';
     else if (dates.length < n) msg.textContent = `Seulement ${available} jour${available > 1 ? 's' : ''} avant la date limite : ${dates.length} partie${dates.length > 1 ? 's' : ''}.`;
-    else msg.textContent = `${t === 'examen' ? 'Une séance de révision' : 'Une partie'} par jour, tu peux changer les dates.`;
+    else msg.textContent = `${dates.length} jours de suite, du ${formatShort(dates[0])} au ${formatShort(dates[dates.length - 1])} · tu peux changer les dates.`;
     msg.classList.toggle('warn', dates.length < n);
 
     list.innerHTML = dates

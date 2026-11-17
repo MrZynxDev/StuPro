@@ -85,15 +85,20 @@ export function computeTimes(date, time, remindMinutes) {
 }
 
 /**
- * Répartit `n` dates uniformément entre `startKey` et la veille de `dueKey`.
+ * `n` jours consécutifs à partir de `startKey`, sans dépasser la veille de `dueKey`.
  * Renvoie { dates, available } — `dates` peut contenir moins de `n` jours s'il n'y a pas assez de place.
  */
 export function splitDates(startKey, dueKey, n) {
   const available = Math.max(0, daysBetween(startKey, dueKey)); // jours de start à la veille de due, inclus
   const count = Math.min(n, available);
-  const dates = [];
-  for (let i = 0; i < count; i++) dates.push(addDays(startKey, Math.floor((i * available) / count)));
-  return { dates, available };
+  return { dates: Array.from({ length: count }, (_, i) => addDays(startKey, i)), available };
+}
+
+/** Début par défaut : les `n` derniers jours avant l'échéance (jamais avant aujourd'hui). */
+export function defaultSplitStart(dueKey, n) {
+  const start = addDays(dueKey, -n);
+  const today = todayKey();
+  return start < today ? today : start;
 }
 
 export function pluralItems(n) {
